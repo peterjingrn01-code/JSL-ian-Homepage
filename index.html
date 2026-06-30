@@ -136,7 +136,18 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
       if (!/^https?:\/\//i.test(q)) q = "https://" + q;
       window.location.href = q;
     } else {
-      window.location.href = DISCOVERY + encodeURIComponent(q);
+      const omegaPackage = {
+  source: "HOME",
+  target: "DISCOVERY",
+  query: q,
+  intent: "SEARCH",
+  state: "ACTIVE",
+  time: new Date().toISOString()
+};
+
+sessionStorage.setItem("OMEGA_HOME_SEARCH", JSON.stringify(omegaPackage));
+
+window.location.href = DISCOVERY + encodeURIComponent(q);
     }
   }
 
