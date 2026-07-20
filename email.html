@@ -128,10 +128,8 @@
 </div>
 
 <script>
-  // 改成你实际部署的 Worker 地址，例如：
-  // https://omegapair-api.peterjingrn01.workers.dev/api/send-email
-  const API_ENDPOINT = "https://omegapair-api.peterjingrn01.workers.dev/api/send-email";
-
+  
+const API_ENDPOINT = "https://send-email-worker.peterjingrn01.workers.dev/api/send-email";
   document.getElementById("endpointDisplay").textContent = API_ENDPOINT;
 
   async function sendEmail() {
