@@ -115,6 +115,9 @@
   <label>正文</label>
   <textarea id="message" placeholder="写点什么..."></textarea>
 
+  <label>回信归一地址（Reply-To）</label>
+  <input type="email" id="replyTo" value="admin@jsl-ian.com">
+
   <button id="sendBtn" onclick="sendEmail()">发送</button>
 
   <div id="status" class="status"></div>
@@ -136,6 +139,7 @@
     const to = document.getElementById("to").value.trim();
     const subject = document.getElementById("subject").value.trim();
     const message = document.getElementById("message").value.trim();
+    const replyTo = document.getElementById("replyTo").value.trim();
     const btn = document.getElementById("sendBtn");
     const statusEl = document.getElementById("status");
 
@@ -157,6 +161,7 @@
           fromPrefix,
           to,
           subject,
+          replyTo,
           html: `<p>${message.replace(/\n/g, "<br>")}</p>`,
         }),
       });
@@ -183,4 +188,3 @@
 </script>
 </body>
 </html>
-
