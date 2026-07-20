@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发送邮件 - mail.jsl-ian.com</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f1115;
+    color: #e8e8ea;
+    margin: 0;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: #8a8d96;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: #b0b3ba;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #2a2d35;
+    background: #1a1d24;
+    color: #e8e8ea;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #5b7fff;
+  }
+  textarea {
+    min-height: 140px;
+    resize: vertical;
+  }
+  .from-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .from-row input { flex: 1; }
+  .from-suffix {
+    color: #8a8d96;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 24px;
+    border: none;
+    border-radius: 10px;
+    background: #5b7fff;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { background: #4a6ce0; }
+  button:disabled { background: #3a3d45; cursor: not-allowed; }
+  .status {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    display: none;
+  }
+  .status.success { display: block; background: #163a26; color: #7ee0a3; }
+  .status.error { display: block; background: #3a1c1c; color: #ff9b9b; }
+  .status.loading { display: block; background: #1a1d24; color: #8a8d96; }
+  .endpoint-note {
+    margin-top: 20px;
+    font-size: 0.75rem;
+    color: #5a5d66;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>发送邮件</h1>
+  <div class="subtitle">通过 mail.jsl-ian.com 发送</div>
+
+  <label>发件前缀</label>
+  <div class="from-row">
+    <input type="text" id="fromPrefix" value="support" placeholder="support">
+    <span class="from-suffix">@mail.jsl-ian.com</span>
+  </div>
+
+  <label>收件人邮箱</label>
+  <input type="email" id="to" placeholder="anyone@example.com">
+
+  <label>标题</label>
+  <input type="text" id="subject" placeholder="邮件标题">
+
+  <label>正文</label>
+  <textarea id="message" placeholder="写点什么..."></textarea>
+
+  <button id="sendBtn" onclick="sendEmail()">发送</button>
+
+  <div id="status" class="status"></div>
+
+  <div class="endpoint-note">
+    接口地址：<span id="endpointDisplay">未设置</span>
+  </div>
+</div>
+
+<script>
+  // 改成你实际部署的 Worker 地址，例如：
+  // https://omegapair-api.peterjingrn01.workers.dev/api/send-email
+  const API_ENDPOINT = "https://omegapair-api.peterjingrn01.workers.dev/api/send-email";
+
+  document.getElementById("endpointDisplay").textContent = API_ENDPOINT;
+
+  async function sendEmail() {
+    const fromPrefix = document.getElementById("fromPrefix").value.trim() || "support";
+    const to = document.getElementById("to").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
+    const btn = document.getElementById("sendBtn");
+    const statusEl = document.getElementById("status");
+
+    if (!to || !subject || !message) {
+      statusEl.className = "status error";
+      statusEl.textContent = "请填完收件人、标题和正文";
+      return;
+    }
+
+    btn.disabled = true;
+    statusEl.className = "status loading";
+    statusEl.textContent = "发送中...";
+
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fromPrefix,
+          to,
+          subject,
+          html: `<p>${message.replace(/\n/g, "<br>")}</p>`,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        statusEl.className = "status success";
+        statusEl.textContent = "发送成功";
+        document.getElementById("to").value = "";
+        document.getElementById("subject").value = "";
+        document.getElementById("message").value = "";
+      } else {
+        statusEl.className = "status error";
+        statusEl.textContent = "发送失败：" + (data.error || res.status);
+      }
+    } catch (err) {
+      statusEl.className = "status error";
+      statusEl.textContent = "网络错误：" + err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
+
