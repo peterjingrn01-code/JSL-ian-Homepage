@@ -30,11 +30,16 @@
   }
   .mail-item {
     background: #1a1d24; border: 1px solid #2a2d35; border-radius: 10px;
-    padding: 12px 14px; margin-bottom: 8px; font-size: 0.85rem;
+    padding: 12px 14px; margin-bottom: 8px; font-size: 0.85rem; cursor: pointer;
   }
   .mail-item .mail-top { display: flex; justify-content: space-between; color: #8a8d96; font-size: 0.75rem; }
   .mail-item .mail-subject { color: #e8e8ea; font-weight: 500; margin-top: 4px; }
-  .mail-item .mail-body { color: #8a8d96; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
+  .mail-item .mail-body {
+    color: #b0b3ba; margin-top: 10px; padding-top: 10px; border-top: 1px solid #2a2d35;
+    white-space: pre-wrap; word-break: break-word; font-size: 0.8rem; max-height: 300px; overflow-y: auto;
+    display: none;
+  }
+  .mail-item.expanded .mail-body { display: block; }
   .empty-hint { color: #5a5d66; font-size: 0.85rem; padding: 8px 0; }
   .logout {
     display: block; text-align: center; padding: 12px; margin-top: 24px;
@@ -129,15 +134,36 @@
         el.innerHTML = '<div class="empty-hint">No messages yet</div>';
         return;
       }
-      el.innerHTML = data.emails.map(m => `
-        <div class="mail-item">
+      el.innerHTML = data.emails.map((m, i) => `
+        <div class="mail-item" onclick="toggleMail(this)">
           <div class="mail-top"><span>${m.from_address}</span><span>${formatTime(m.received_at)}</span></div>
           <div class="mail-subject">${m.subject || "(no subject)"}</div>
+          <div class="mail-body">${escapeHtml(extractReadableBody(m.body))}</div>
         </div>
       `).join("");
     } catch (err) {
       el.innerHTML = '<div class="empty-hint">Failed to load inbox</div>';
     }
+  }
+
+  function toggleMail(el) {
+    el.classList.toggle("expanded");
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // The stored body is the raw MIME source (headers + content). This does a
+  // best-effort trim to show the part after the header block, so the reader
+  // isn't stuck scrolling through Received/DKIM/ARC headers first.
+  function extractReadableBody(raw) {
+    if (!raw) return "(no content)";
+    const splitIndex = raw.search(/\r?\n\r?\n/);
+    const body = splitIndex !== -1 ? raw.slice(splitIndex).trim() : raw;
+    return body.length > 3000 ? body.slice(0, 3000) + "\n...(truncated)" : body;
   }
 
   async function loadSent(token) {
