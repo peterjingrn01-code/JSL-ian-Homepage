@@ -25,6 +25,17 @@
     background: #5b7fff; color: white; border-radius: 10px; text-decoration: none;
     font-weight: 600; font-size: 0.95rem;
   }
+  .section-title {
+    font-size: 0.95rem; font-weight: 600; margin: 24px 0 10px;
+  }
+  .mail-item {
+    background: #1a1d24; border: 1px solid #2a2d35; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 8px; font-size: 0.85rem;
+  }
+  .mail-item .mail-top { display: flex; justify-content: space-between; color: #8a8d96; font-size: 0.75rem; }
+  .mail-item .mail-subject { color: #e8e8ea; font-weight: 500; margin-top: 4px; }
+  .mail-item .mail-body { color: #8a8d96; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
+  .empty-hint { color: #5a5d66; font-size: 0.85rem; padding: 8px 0; }
   .logout {
     display: block; text-align: center; padding: 12px; margin-top: 24px;
     color: #8a8d96; font-size: 0.85rem; text-decoration: underline; cursor: pointer;
@@ -50,6 +61,12 @@
     </div>
 
     <a href="email.html" class="tool-link">Open email tool →</a>
+
+    <div class="section-title">Inbox</div>
+    <div id="inboxList"><div class="empty-hint">Loading...</div></div>
+
+    <div class="section-title">Sent</div>
+    <div id="sentList"><div class="empty-hint">Loading...</div></div>
 
     <div class="logout" onclick="logout()">Log out</div>
   </div>
@@ -86,9 +103,64 @@
 
       document.getElementById("loadingState").style.display = "none";
       document.getElementById("dashboardContent").style.display = "block";
+
+      loadInbox(token);
+      loadSent(token);
     } catch (err) {
       document.getElementById("loadingState").innerHTML =
         '<div class="status error">Failed to load: ' + err.message + '</div>';
+    }
+  }
+
+  function formatTime(ms) {
+    return new Date(ms).toLocaleString();
+  }
+
+  async function loadInbox(token) {
+    const el = document.getElementById("inboxList");
+    try {
+      const res = await fetch(`${AUTH_BASE}/api/mail/inbox`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (!data.success || !data.emails || data.emails.length === 0) {
+        el.innerHTML = '<div class="empty-hint">No messages yet</div>';
+        return;
+      }
+      el.innerHTML = data.emails.map(m => `
+        <div class="mail-item">
+          <div class="mail-top"><span>${m.from_address}</span><span>${formatTime(m.received_at)}</span></div>
+          <div class="mail-subject">${m.subject || "(no subject)"}</div>
+        </div>
+      `).join("");
+    } catch (err) {
+      el.innerHTML = '<div class="empty-hint">Failed to load inbox</div>';
+    }
+  }
+
+  async function loadSent(token) {
+    const el = document.getElementById("sentList");
+    try {
+      const res = await fetch(`${AUTH_BASE}/api/mail/sent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (!data.success || !data.emails || data.emails.length === 0) {
+        el.innerHTML = '<div class="empty-hint">No emails sent yet</div>';
+        return;
+      }
+      el.innerHTML = data.emails.map(m => `
+        <div class="mail-item">
+          <div class="mail-top"><span>To: ${m.to_address}</span><span>${formatTime(m.sent_at)}</span></div>
+          <div class="mail-subject">${m.subject || "(no subject)"}</div>
+        </div>
+      `).join("");
+    } catch (err) {
+      el.innerHTML = '<div class="empty-hint">Failed to load sent history</div>';
     }
   }
 
