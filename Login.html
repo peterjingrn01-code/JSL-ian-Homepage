@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Portal Login</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f1115; color: #e8e8ea; margin: 0; padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 420px; margin: 0 auto; }
+  h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: #8a8d96; font-size: 0.85rem; margin-bottom: 24px; }
+  .step-indicator { display: flex; gap: 6px; margin-bottom: 24px; }
+  .step-dot { flex: 1; height: 4px; border-radius: 2px; background: #2a2d35; }
+  .step-dot.active { background: #5b7fff; }
+  .step-dot.done { background: #4fd18f; }
+  label { display: block; font-size: 0.85rem; color: #b0b3ba; margin-bottom: 6px; margin-top: 16px; }
+  input {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid #2a2d35; background: #1a1d24; color: #e8e8ea; font-size: 0.95rem;
+  }
+  input:focus { outline: none; border-color: #5b7fff; }
+  button {
+    width: 100%; padding: 14px; margin-top: 24px; border: none; border-radius: 10px;
+    background: #5b7fff; color: white; font-size: 1rem; font-weight: 600; cursor: pointer;
+  }
+  button:disabled { background: #3a3d45; cursor: not-allowed; }
+  .status { margin-top: 16px; padding: 12px 14px; border-radius: 10px; font-size: 0.88rem; display: none; }
+  .status.success { display: block; background: #163a26; color: #7ee0a3; }
+  .status.error { display: block; background: #3a1c1c; color: #ff9b9b; }
+  .status.loading { display: block; background: #1a1d24; color: #8a8d96; }
+  .hint { font-size: 0.78rem; color: #5a5d66; margin-top: 8px; }
+  .coins-display {
+    background: #1a1d24; border: 1px solid #2a2d35; border-radius: 10px;
+    padding: 16px; text-align: center; margin-top: 16px;
+  }
+  .coins-display .value { font-size: 1.8rem; font-weight: 700; color: #5b7fff; }
+  .coins-display .label { font-size: 0.8rem; color: #8a8d96; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Employee Portal Login</h1>
+  <div class="subtitle">Three-step verification</div>
+
+  <div class="step-indicator">
+    <div class="step-dot" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+
+  <!-- Step 1: Employee ID -->
+  <div id="step1">
+    <label>Employee ID</label>
+    <input type="text" id="employeeId" placeholder="Enter your employee ID">
+    <button onclick="requestOTP()">Get verification code</button>
+    <div class="hint">A code will be sent to your registered personal email</div>
+  </div>
+
+  <!-- Step 2: OTP + company email -->
+  <div id="step2" style="display:none">
+    <label>Verification code</label>
+    <input type="text" id="otpInput" placeholder="6-digit code" maxlength="6">
+    <label>Company email</label>
+    <input type="email" id="companyEmail" placeholder="you@jsl-ian.com">
+    <button onclick="verifyOTP()">Verify</button>
+  </div>
+
+  <!-- Step 3: coins record confirmation -->
+  <div id="step3" style="display:none">
+    <div class="coins-display">
+      <div class="value" id="coinsValue">--</div>
+      <div class="label">Today's coins total</div>
+    </div>
+    <div class="hint" id="coinsBreakdownDisplay" style="margin-top:8px;"></div>
+    <label>Confirm value</label>
+    <input type="number" id="coinsConfirm" placeholder="Enter the total shown above to confirm">
+    <button onclick="confirmRecord()">Confirm and start work</button>
+    <div class="hint">This confirmation is written to a tamper-evident record</div>
+  </div>
+
+  <div id="status" class="status"></div>
+</div>
+
+<script>
+  // Your actual deployed employee-portal-auth-worker URL
+  const API_BASE = "https://employee-portal-auth-worker.peterjingrn01.workers.dev";
+
+  let state = { employeeId: "", sessionId: "" };
+
+  function showStatus(type, msg) {
+    const el = document.getElementById("status");
+    el.className = "status " + type;
+    el.textContent = msg;
+  }
+
+  function setStep(n) {
+    document.getElementById("step1").style.display = n === 1 ? "block" : "none";
+    document.getElementById("step2").style.display = n === 2 ? "block" : "none";
+    document.getElementById("step3").style.display = n === 3 ? "block" : "none";
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById("dot" + i);
+      dot.className = "step-dot " + (i < n ? "done" : i === n ? "active" : "");
+    }
+  }
+
+  async function requestOTP() {
+    const employeeId = document.getElementById("employeeId").value.trim();
+    if (!employeeId) return showStatus("error", "Please enter your employee ID");
+
+    showStatus("loading", "Sending...");
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/request-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ employeeId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        state.employeeId = employeeId;
+        state.sessionId = data.sessionId;
+        showStatus("success", data.message);
+        setStep(2);
+      } else {
+        showStatus("error", data.error || "Request failed");
+      }
+    } catch (err) {
+      showStatus("error", "Network error: " + err.message);
+    }
+  }
+
+  async function verifyOTP() {
+    const otp = document.getElementById("otpInput").value.trim();
+    const companyEmail = document.getElementById("companyEmail").value.trim();
+    if (!otp || !companyEmail) return showStatus("error", "Please fill in both the code and company email");
+
+    showStatus("loading", "Verifying...");
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          employeeId: state.employeeId,
+          sessionId: state.sessionId,
+          otp,
+          companyEmail,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        state.companyEmail = companyEmail;
+        document.getElementById("coinsValue").textContent = data.currentCoins;
+        if (data.coinsBreakdown) {
+          document.getElementById("coinsBreakdownDisplay").textContent =
+            `Breakdown: previous balance ${data.coinsBreakdown.previousBalance} + today's rate ${data.coinsBreakdown.dailyRate} = ${data.coinsBreakdown.total}`;
+        }
+        showStatus("success", data.message);
+        setStep(3);
+      } else {
+        showStatus("error", data.error || "Verification failed");
+      }
+    } catch (err) {
+      showStatus("error", "Network error: " + err.message);
+    }
+  }
+
+  async function confirmRecord() {
+    const coinsConfirmed = document.getElementById("coinsConfirm").value.trim();
+    if (!coinsConfirmed) return showStatus("error", "Please enter the confirmation value");
+
+    showStatus("loading", "Confirming...");
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/confirm-record`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          employeeId: state.employeeId,
+          sessionId: state.sessionId,
+          companyEmail: state.companyEmail,
+          coinsConfirmed: Number(coinsConfirmed),
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showStatus("success", "Login successful, loading your dashboard...");
+        sessionStorage.setItem("workToken", data.workToken);
+        setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+      } else {
+        showStatus("error", data.error || "Confirmation failed");
+      }
+    } catch (err) {
+      showStatus("error", "Network error: " + err.message);
+    }
+  }
+
+  setStep(1);
+</script>
+</body>
+</html>
