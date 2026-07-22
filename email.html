@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Email - mail.jsl-ian.com</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f1115;
+    color: #e8e8ea;
+    margin: 0;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: #8a8d96;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: #b0b3ba;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #2a2d35;
+    background: #1a1d24;
+    color: #e8e8ea;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #5b7fff;
+  }
+  textarea {
+    min-height: 140px;
+    resize: vertical;
+  }
+  .from-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .from-row input { flex: 1; }
+  .from-suffix {
+    color: #8a8d96;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 24px;
+    border: none;
+    border-radius: 10px;
+    background: #5b7fff;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { background: #4a6ce0; }
+  button:disabled { background: #3a3d45; cursor: not-allowed; }
+  .status {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    display: none;
+  }
+  .status.success { display: block; background: #163a26; color: #7ee0a3; }
+  .status.error { display: block; background: #3a1c1c; color: #ff9b9b; }
+  .status.loading { display: block; background: #1a1d24; color: #8a8d96; }
+  .endpoint-note {
+    margin-top: 20px;
+    font-size: 0.75rem;
+    color: #5a5d66;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Send Email</h1>
+  <div class="subtitle">Sent via mail.jsl-ian.com</div>
+
+  <label>Sender (determined by your login identity)</label>
+  <div class="from-row">
+    <input type="text" id="fromDisplay" value="Loading..." readonly disabled>
+  </div>
+
+  <label>Recipient email</label>
+  <input type="email" id="to" placeholder="anyone@example.com">
+
+  <label>Subject</label>
+  <input type="text" id="subject" placeholder="Email subject">
+
+  <label>Message</label>
+  <textarea id="message" placeholder="Write something..."></textarea>
+
+  <label>Reply-To</label>
+  <input type="email" id="replyTo" value="admin@jsl-ian.com">
+
+  <button id="sendBtn" onclick="sendEmail()">Send</button>
+
+  <div id="status" class="status"></div>
+
+  <div class="endpoint-note">
+    Endpoint: <span id="endpointDisplay">not set</span>
+  </div>
+</div>
+
+<script>
+  const API_ENDPOINT = "https://send-email-worker.peterjingrn01.workers.dev/api/send-email";
+  const AUTH_BASE = "https://employee-portal-auth-worker.peterjingrn01.workers.dev";
+
+  document.getElementById("endpointDisplay").textContent = API_ENDPOINT;
+
+  // Check login state on load; redirect if not logged in, otherwise show the real sender identity
+  (async function checkLogin() {
+    const token = sessionStorage.getItem("workToken");
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+    try {
+      const res = await fetch(`${AUTH_BASE}/api/auth/whoami`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        sessionStorage.removeItem("workToken");
+        window.location.href = "login.html";
+        return;
+      }
+      const localPart = data.employee.company_email.split("@")[0];
+      document.getElementById("fromDisplay").value = `${localPart}@mail.jsl-ian.com`;
+    } catch (err) {
+      document.getElementById("fromDisplay").value = "Identity check failed";
+    }
+  })();
+
+  async function sendEmail() {
+    const token = sessionStorage.getItem("workToken");
+    const to = document.getElementById("to").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
+    const replyTo = document.getElementById("replyTo").value.trim();
+    const btn = document.getElementById("sendBtn");
+    const statusEl = document.getElementById("status");
+
+    if (!to || !subject || !message) {
+      statusEl.className = "status error";
+      statusEl.textContent = "Please fill in recipient, subject, and message";
+      return;
+    }
+
+    btn.disabled = true;
+    statusEl.className = "status loading";
+    statusEl.textContent = "Sending...";
+
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          to,
+          subject,
+          replyTo,
+          html: `<p>${message.replace(/\n/g, "<br>")}</p>`,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        statusEl.className = "status success";
+        statusEl.textContent = "Sent successfully";
+        document.getElementById("to").value = "";
+        document.getElementById("subject").value = "";
+        document.getElementById("message").value = "";
+      } else {
+        statusEl.className = "status error";
+        statusEl.textContent = "Send failed: " + (data.error || res.status);
+      }
+    } catch (err) {
+      statusEl.className = "status error";
+      statusEl.textContent = "Network error: " + err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
