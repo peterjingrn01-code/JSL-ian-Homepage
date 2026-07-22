@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Dashboard</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f1115; color: #e8e8ea; margin: 0; padding: 24px 16px; min-height: 100vh;
+  }
+  .container { max-width: 420px; margin: 0 auto; }
+  h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: #8a8d96; font-size: 0.85rem; margin-bottom: 24px; }
+  .card {
+    background: #1a1d24; border: 1px solid #2a2d35; border-radius: 12px;
+    padding: 18px; margin-bottom: 14px;
+  }
+  .card .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.9rem; }
+  .card .row .k { color: #8a8d96; }
+  .card .row .v { color: #e8e8ea; font-weight: 500; }
+  .tool-link {
+    display: block; text-align: center; padding: 16px; margin-top: 8px;
+    background: #5b7fff; color: white; border-radius: 10px; text-decoration: none;
+    font-weight: 600; font-size: 0.95rem;
+  }
+  .logout {
+    display: block; text-align: center; padding: 12px; margin-top: 24px;
+    color: #8a8d96; font-size: 0.85rem; text-decoration: underline; cursor: pointer;
+  }
+  .status { padding: 12px 14px; border-radius: 10px; font-size: 0.88rem; }
+  .status.error { background: #3a1c1c; color: #ff9b9b; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="loadingState">
+    <div class="status">Loading...</div>
+  </div>
+
+  <div id="dashboardContent" style="display:none">
+    <h1>Welcome back</h1>
+    <div class="subtitle" id="employeeIdDisplay"></div>
+
+    <div class="card">
+      <div class="row"><span class="k">Company email</span><span class="v" id="companyEmailDisplay"></span></div>
+      <div class="row"><span class="k">Current coins</span><span class="v" id="coinsDisplay"></span></div>
+      <div class="row"><span class="k">Role level</span><span class="v" id="roleDisplay"></span></div>
+    </div>
+
+    <a href="email.html" class="tool-link">Open email tool →</a>
+
+    <div class="logout" onclick="logout()">Log out</div>
+  </div>
+</div>
+
+<script>
+  const AUTH_BASE = "https://employee-portal-auth-worker.peterjingrn01.workers.dev";
+
+  async function loadDashboard() {
+    const token = sessionStorage.getItem("workToken");
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const res = await fetch(`${AUTH_BASE}/api/auth/whoami`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        sessionStorage.removeItem("workToken");
+        window.location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("employeeIdDisplay").textContent = "Employee ID: " + data.employee.employee_id;
+      document.getElementById("companyEmailDisplay").textContent = data.employee.company_email;
+      document.getElementById("coinsDisplay").textContent = data.employee.current_coins;
+      document.getElementById("roleDisplay").textContent = "L" + data.employee.role_level;
+
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("dashboardContent").style.display = "block";
+    } catch (err) {
+      document.getElementById("loadingState").innerHTML =
+        '<div class="status error">Failed to load: ' + err.message + '</div>';
+    }
+  }
+
+  function logout() {
+    const token = sessionStorage.getItem("workToken");
+    if (token) {
+      fetch(`${AUTH_BASE}/api/auth/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      }).catch(() => {}); // proceed with local logout even if this request fails
+    }
+    sessionStorage.removeItem("workToken");
+    window.location.href = "login.html";
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
