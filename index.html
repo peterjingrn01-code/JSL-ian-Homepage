@@ -235,27 +235,23 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
     <path id="englishFlowPath"
       d="M 24 90
          L 300 90
-         C 360 90, 405 82, 438 58
-         C 454 46, 465 29, 500 20
-         A 70 70 0 0 1 551 48
-         A 70 70 0 0 1 500 160
-         A 70 70 0 0 1 449 48
-         A 70 70 0 0 1 500 20
-         A 70 70 0 0 1 551 48
-         C 575 78, 620 90, 700 90
+         C 365 90, 408 82, 442 60
+         C 456 51, 466 42, 452 42
+         A 48 48 0 1 1 548 42
+         A 48 48 0 1 1 452 42
+         A 48 48 0 0 1 548 42
+         C 570 67, 610 88, 700 90
          L 976 90"
       fill="none"/>
     <path id="chineseFlowPath"
       d="M 976 90
          L 700 90
-         C 620 90, 575 78, 551 48
-         A 70 70 0 0 0 500 20
-         A 70 70 0 0 0 449 48
-         A 70 70 0 0 0 500 160
-         A 70 70 0 0 0 551 48
-         A 70 70 0 0 0 500 20
-         A 70 70 0 0 0 449 48
-         C 425 78, 380 90, 300 90
+         C 630 90, 592 80, 572 66
+         C 558 56, 548 45, 572 90
+         A 72 72 0 1 0 428 90
+         A 72 72 0 1 0 572 90
+         A 72 72 0 0 0 428 90
+         C 408 80, 370 90, 300 90
          L 24 90"
       fill="none"/>
    </defs>
@@ -408,10 +404,10 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
     const enLen = englishPath.getTotalLength();
     const zhLen = chinesePath.getTotalLength();
 
-    const travelMs = 17000;
-    const staggerEn = 175;
-    const staggerZh = 210;
-    const pauseMs = 2200;
+    const travelMs = 28500;
+    const staggerEn = 300;
+    const staggerZh = 350;
+    const pauseMs = 3000;
 
     const longestStream = Math.max(
       staggerEn * (enNodes.length - 1),
@@ -435,9 +431,8 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
       node.setAttribute("x", pt.x.toFixed(2));
       node.setAttribute("y", pt.y.toFixed(2));
 
-      const coreScale = nearCore ? (1.06 + .13 * Math.sin(local / 135 + index * .3)) : 1;
-      const verticalOffset =
-        nearCore ? (language === "en" ? -6 : 6) : 0;
+      const coreScale = nearCore ? (1.02 + .05 * Math.sin(local / 180 + index * .3)) : 1;
+      const verticalOffset = 0;
 
       node.setAttribute(
         "transform",
