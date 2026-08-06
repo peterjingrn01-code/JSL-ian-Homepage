@@ -416,6 +416,31 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
     const cycleMs = enDuration + pauseMs + zhDuration + pauseMs;
     let started = null;
 
+    function place(node, path, plen, local, index, language){
+      if (local < 0 || local > travelMs){
+        node.style.opacity = "0";
+        return;
+      }
+
+      const p = local / travelMs;
+      const pt = path.getPointAtLength(plen * p);
+      const nearCore = pt.x > 420 && pt.x < 580;
+
+      const pulse = .72 + .28 * Math.sin((local / 135) + index * .72);
+      node.style.opacity = String(Math.max(.56, pulse));
+      node.setAttribute("x", pt.x.toFixed(2));
+      node.setAttribute("y", pt.y.toFixed(2));
+
+      const coreScale = nearCore ? (1.02 + .04 * Math.sin(local / 200 + index * .25)) : 1;
+
+      node.setAttribute(
+        "transform",
+        "translate(" + pt.x.toFixed(2) + " " + pt.y.toFixed(2) + ") " +
+        "scale(" + coreScale.toFixed(3) + ") " +
+        "translate(" + (-pt.x).toFixed(2) + " " + (-pt.y).toFixed(2) + ")"
+      );
+    }
+
     function frame(now){
       if (started === null) started = now;
       const cycle = (now - started) % cycleMs;

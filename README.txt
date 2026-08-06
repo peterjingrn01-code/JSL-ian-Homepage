@@ -1,12 +1,12 @@
-JSL-ian Homepage — Final Conjugate Version
+JSL-ian Homepage — Final Conjugate FIXED
 
-Final approved animation:
-1. English enters from the left.
-2. English alone enters Ω, completes the clockwise circular movement, and exits right.
-3. Short pause.
-4. Chinese enters from the right.
-5. Chinese alone enters Ω, completes the opposite circular movement, and exits left.
-6. Short pause, then the cycle repeats.
+Bug fixed:
+- Restored the missing character movement function.
 
-The approved continuous Ω geometry from v3 is unchanged.
-All other homepage layout, links, logo, search behavior, slogan, and company information remain unchanged.
+Final animation:
+1. English enters from the left, moves into Ω, circles alone, exits right.
+2. Pause.
+3. Chinese enters from the right, moves into Ω in the opposite direction, circles alone, exits left.
+4. Pause, repeat.
+
+The approved Ω geometry is unchanged.
