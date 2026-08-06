@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JSL-ian Technologies</title>
+<meta name="description" content="JSL-ian Technologies homepage and browser gateway.">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;min-height:100%;background:#fff;color:#4b5563;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.page{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 18px 26px}
+.center{width:100%;max-width:640px;text-align:center;margin-top:auto;margin-bottom:auto;transform:translateY(-14px)}
+.logo{width:min(64vw,360px);max-width:360px;height:auto;display:block;margin:0 auto 36px}
+.search-form{width:min(86vw,560px);height:68px;margin:0 auto;display:flex;align-items:center;border:1px solid #d9dce3;border-radius:999px;background:#fff;box-shadow:0 10px 28px rgba(17,24,39,.10);padding:0 20px}
+.icon{width:28px;height:28px;flex:0 0 28px;color:#4b5563}
+.search-input{flex:1;border:0;outline:0;background:transparent;color:#4b5563;font-size:24px;line-height:1;padding:0 16px;min-width:0}
+.search-input::placeholder{color:#6b7280;opacity:.9}
+.go{border:0;background:transparent;color:#2f3540;font-size:44px;line-height:1;cursor:pointer;padding:0 0 5px 8px}
+.footer{text-align:center;font-size:20px;line-height:1.55;color:#4b5563;margin-top:auto;padding-bottom:8px}
+.footer .tm{margin-top:2px}
+@media (max-width:520px){
+ .page{padding-top:28px;padding-bottom:22px}
+ .center{transform:translateY(-10px)}
+ .logo{width:64vw;margin-bottom:30px}
+ .search-form{width:86vw;height:62px;padding:0 16px}
+ .icon{width:25px;height:25px;flex-basis:25px}
+ .search-input{font-size:22px;padding:0 13px}
+ .go{font-size:40px}
+ .footer{font-size:18px}
+ .footer .tm{margin-top:8px}
+}
+
+/* JSL-ian Slogan */
+.jsl-slogan{
+ margin-top:38px;
+ margin-bottom:28px;
+ text-align:center;
+ color:#5f6368;
+ line-height:1.8;
+}
+.jsl-slogan p{
+ margin:6px 0;
+ font-size:18px;
+ font-weight:500;
+ letter-spacing:.3px;
+}
+.quick-links{
+ text-align:center;
+ margin-top:24px;
+ font-size:13px;
+ line-height:1.6;
+}
+.link-row{
+ display:flex;
+ justify-content:center;
+ gap:8px;
+ flex-wrap:wrap;
+}
+.brand-row{
+ margin-top:6px;
+}
+.brand-row{
+ text-align:center;
+ margin-top:4px;
+}
+
+/* Compact company information */
+.compact-company{
+  font-size:13px;
+  line-height:1.35;
+  padding-bottom:6px;
+}
+.compact-company .tm{
+  margin-top:2px;
+  font-size:12px;
+}
+
+
+/* JSL-ian Vision Stream — one continuous Ω structure */
+.vision-wrap{
+  width:min(96vw,1120px);
+  margin:22px auto 14px;
+  position:relative;
+}
+.vision-svg{
+  width:100%;
+  height:auto;
+  display:block;
+  overflow:visible;
+}
+.vision-char{
+  fill:#ffd54a;
+  font-size:18px;
+  font-weight:600;
+  dominant-baseline:middle;
+  text-anchor:middle;
+  filter:url(#goldGlow);
+  pointer-events:none;
+}
+.vision-star{
+  fill:#fff7c2;
+  filter:url(#starGlow);
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:starTwinkle 2.4s ease-in-out infinite alternate;
+}
+.vision-star.s2{animation-delay:.7s}
+.vision-star.s3{animation-delay:1.3s}
+.vision-star.s4{animation-delay:1.9s}
+@keyframes starTwinkle{
+  from{opacity:.24;transform:scale(.65)}
+  to{opacity:1;transform:scale(1.35)}
+}
+.slogan{
+  width:min(92vw,760px);
+  white-space:nowrap;
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+.slogan span{display:inline}
+.slogan span + span::before{content:" "}
+
+@media (max-width:520px){
+  .vision-wrap{width:96vw;margin-top:18px;margin-bottom:12px}
+  .vision-svg{min-height:118px}
+  .vision-char{font-size:15px}
+}
+
+
+.vision-en{fill:#ffd75a}
+.vision-zh{fill:#ffc928}
+
+</style>
+</head>
+<body>
+<main class="page">
+ <section class="center">
+  <img class="logo" id="jslLogo" alt="JSL-ian Technologies">
+  <form class="search-form" id="omegaForm" autocomplete="off">
+   <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="10.8" cy="10.8" r="6.7" fill="none" stroke="currentColor" stroke-width="2.4"/>
+    <path d="M16 16l5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+   </svg>
+   <input class="search-input" id="omegaInput" name="q" placeholder="Enter a URL or search..." autofocus>
+   <button class="go" type="submit" aria-label="Open">→</button>
+  </form>
+ </section>
+
+ <nav aria-label="Quick links">
+  <div class="quick-links">
+   <div class="link-row">
+    <a href="https://www.google.com/">Google</a>
+    <a href="https://chatgpt.com/">ChatGPT</a>
+    <a href="https://github.com/">GitHub</a>
+    <a href="https://www.wikipedia.org/">Wikipedia</a>
+    <a href="https://www.youtube.com/">YouTube</a>
+   </div>
+
+   <div class="link-row brand-row">
+    <a href="https://ziran.jsl-ian.com/" target="_blank" rel="noopener">Ziran Projects</a>
+    <a href="https://omega1.jsl-ian.com/" target="_blank" rel="noopener">Omega Crypto-Engine</a>
+    <a href="https://omega.jsl-ian.com/" target="_blank" rel="noopener">Chat&amp;Coin</a>
+    <a href="https://discovery.jsl-ian.com/" target="_blank" rel="noopener">Discover Engine</a>
+    <a href="https://jule.jsl-ian.com/" target="_blank" rel="noopener">Jule Browser</a>
+   </div>
+
+   <div class="link-row brand-row">
+    <a href="jsl-ian.html">JSL-ian</a>
+    <a href="https://app.jsl-ian.com/" target="_blank" rel="noopener">JSL Synapse</a>
+   </div>
+  </div>
+ </nav>
+
+
+ <section class="vision-wrap" aria-label="JSL-ian vision">
+  <svg class="vision-svg" id="visionSvg" viewBox="0 0 1000 180" role="img" aria-label="JSL-ian animated vision stream">
+   <defs>
+    <linearGradient id="spaceBase" x1="0" y1="0" x2="1" y2="0">
+     <stop offset="0%" stop-color="#02040a"/>
+     <stop offset="22%" stop-color="#07101f"/>
+     <stop offset="50%" stop-color="#00050d"/>
+     <stop offset="78%" stop-color="#07101f"/>
+     <stop offset="100%" stop-color="#02040a"/>
+    </linearGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="55%">
+     <stop offset="0%" stop-color="#12345d" stop-opacity=".72"/>
+     <stop offset="28%" stop-color="#07182d" stop-opacity=".58"/>
+     <stop offset="70%" stop-color="#02060d" stop-opacity=".2"/>
+     <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="goldGlow" x="-80%" y="-80%" width="260%" height="260%">
+     <feGaussianBlur stdDeviation="2.2" result="blur"/>
+     <feFlood flood-color="#ffb300" flood-opacity=".88" result="gold"/>
+     <feComposite in="gold" in2="blur" operator="in" result="glow"/>
+     <feMerge>
+      <feMergeNode in="glow"/>
+      <feMergeNode in="SourceGraphic"/>
+     </feMerge>
+    </filter>
+    <filter id="starGlow" x="-200%" y="-200%" width="500%" height="500%">
+     <feGaussianBlur stdDeviation="2.4" result="b"/>
+     <feMerge>
+      <feMergeNode in="b"/>
+      <feMergeNode in="SourceGraphic"/>
+     </feMerge>
+    </filter>
+
+    <!-- ONE continuous shape: thin arms naturally expand into a circular Ω core -->
+    <clipPath id="visionClip">
+     <path d="
+       M 18 90
+       C 110 86, 205 83, 300 83
+       C 350 83, 388 80, 415 68
+       C 432 60, 440 49, 449 36
+       C 461 19, 479 10, 500 10
+       C 521 10, 539 19, 551 36
+       C 560 49, 568 60, 585 68
+       C 612 80, 650 83, 700 83
+       C 795 83, 890 86, 982 90
+       C 890 94, 795 97, 700 97
+       C 650 97, 612 100, 585 112
+       C 568 120, 560 131, 551 144
+       C 539 161, 521 170, 500 170
+       C 479 170, 461 161, 449 144
+       C 440 131, 432 120, 415 112
+       C 388 100, 350 97, 300 97
+       C 205 97, 110 94, 18 90 Z"/>
+    </clipPath>
+
+    <!-- Conjugate bilingual flows:
+         English enters from left; Chinese enters from right.
+         Both move into the Ω core on opposite circular tracks. -->
+    <path id="englishFlowPath"
+      d="M 24 90
+         L 300 90
+         C 360 90, 405 82, 438 58
+         C 454 46, 465 29, 500 20
+         A 70 70 0 0 1 551 48
+         A 70 70 0 0 1 500 160
+         A 70 70 0 0 1 449 48
+         A 70 70 0 0 1 500 20
+         A 70 70 0 0 1 551 48
+         C 575 78, 620 90, 700 90
+         L 976 90"
+      fill="none"/>
+    <path id="chineseFlowPath"
+      d="M 976 90
+         L 700 90
+         C 620 90, 575 78, 551 48
+         A 70 70 0 0 0 500 20
+         A 70 70 0 0 0 449 48
+         A 70 70 0 0 0 500 160
+         A 70 70 0 0 0 551 48
+         A 70 70 0 0 0 500 20
+         A 70 70 0 0 0 449 48
+         C 425 78, 380 90, 300 90
+         L 24 90"
+      fill="none"/>
+   </defs>
+
+   <g clip-path="url(#visionClip)">
+    <rect x="0" y="0" width="1000" height="180" fill="url(#spaceBase)"/>
+    <ellipse cx="500" cy="90" rx="76" ry="76" fill="url(#coreGlow)"/>
+
+    <!-- subtle space stars -->
+    <g opacity=".95">
+     <circle class="vision-star s1" cx="105" cy="87" r="1.6"/>
+     <circle class="vision-star s2" cx="164" cy="94" r="1.1"/>
+     <circle class="vision-star s3" cx="242" cy="84" r="1.3"/>
+     <circle class="vision-star s4" cx="326" cy="93" r="1.8"/>
+     <circle class="vision-star s2" cx="403" cy="86" r="1.2"/>
+     <circle class="vision-star s3" cx="448" cy="49" r="1.4"/>
+     <circle class="vision-star s1" cx="470" cy="123" r="1.1"/>
+     <circle class="vision-star s4" cx="491" cy="40" r="1.8"/>
+     <circle class="vision-star s2" cx="514" cy="71" r="1.2"/>
+     <circle class="vision-star s3" cx="531" cy="119" r="1.7"/>
+     <circle class="vision-star s1" cx="554" cy="54" r="1.1"/>
+     <circle class="vision-star s4" cx="575" cy="91" r="1.5"/>
+     <circle class="vision-star s2" cx="642" cy="85" r="1.2"/>
+     <circle class="vision-star s3" cx="721" cy="96" r="1.6"/>
+     <circle class="vision-star s1" cx="801" cy="84" r="1.1"/>
+     <circle class="vision-star s4" cx="892" cy="93" r="1.7"/>
+    </g>
+
+    <!-- larger gold flashes -->
+    <g fill="#ffd54a" filter="url(#starGlow)">
+     <path d="M120 82 L123 89 L130 92 L123 95 L120 102 L117 95 L110 92 L117 89 Z"/>
+     <path d="M385 82 L388 89 L395 92 L388 95 L385 102 L382 95 L375 92 L382 89 Z"/>
+     <path d="M500 76 L504 86 L514 90 L504 94 L500 104 L496 94 L486 90 L496 86 Z"/>
+     <path d="M615 82 L618 89 L625 92 L618 95 L615 102 L612 95 L605 92 L612 89 Z"/>
+     <path d="M880 82 L883 89 L890 92 L883 95 L880 102 L877 95 L870 92 L877 89 Z"/>
+    </g>
+
+    <g id="visionTextLayer"></g>
+   </g>
+
+   <!-- one continuous gold outline, no added circle -->
+   <path d="
+     M 18 90
+     C 110 86, 205 83, 300 83
+     C 350 83, 388 80, 415 68
+     C 432 60, 440 49, 449 36
+     C 461 19, 479 10, 500 10
+     C 521 10, 539 19, 551 36
+     C 560 49, 568 60, 585 68
+     C 612 80, 650 83, 700 83
+     C 795 83, 890 86, 982 90
+     C 890 94, 795 97, 700 97
+     C 650 97, 612 100, 585 112
+     C 568 120, 560 131, 551 144
+     C 539 161, 521 170, 500 170
+     C 479 170, 461 161, 449 144
+     C 440 131, 432 120, 415 112
+     C 388 100, 350 97, 300 97
+     C 205 97, 110 94, 18 90 Z"
+     fill="none" stroke="#d89b00" stroke-width="1.7"/>
+  </svg>
+ </section>
+
+ <section class="slogan" aria-label="JSL-ian slogan"><span>Build what you imagine.</span><span>Discover what you create.</span></section>
+ <div class="mini">Jing Space is your space.</div>
+
+ <footer class="footer compact-company">
+  <div>© 2026 JSL-ian Technologies Ltd. · All Rights Reserved.</div>
+  <div>☎ 18665888182 · ✉ contact@jsl-ian.com</div>
+  <div class="tm">JSL-ian™ is a trademark of JSL-ian Technologies Ltd.</div>
+ </footer>
+</main>
+
+<script>
+(function(){
+  const DISCOVERY = "https://discovery.jsl-ian.com/?q=";
+
+  /* Preserve the exact existing embedded company logo from the previous homepage version. */
+  fetch("https://raw.githubusercontent.com/peterjingrn01-code/JSL-ian-Homepage/44eb8fd/index.html")
+    .then(function(r){ return r.text(); })
+    .then(function(source){
+      const match = source.match(/<img\s+class=["']logo["']\s+src=["']([^"']+)["']/i);
+      if(match) document.getElementById("jslLogo").src = match[1];
+    })
+    .catch(function(){});
+
+  function looksLikeURL(q){
+    if (/^https?:\/\/./i.test(q)) return true;
+    if (/^localhost(:\d+)?(\/.*)?$/i.test(q)) return true;
+    if (/^(\d{1,3}\.){3}\d{1,3}(:\d+)?(\/.*)?$/.test(q)) return true;
+    if (/^[^\s]+\.[a-z]{2,}(\/.*)?$/i.test(q)) return true;
+    return false;
+  }
+
+  function openOmega(q){
+    q = q.trim();
+    if (!q) return;
+    if (looksLikeURL(q)) {
+      if (!/^https?:\/\//i.test(q)) q = "https://" + q;
+      window.location.href = q;
+    } else {
+      const omegaPackage = {
+        source: "HOME",
+        target: "DISCOVERY",
+        query: q,
+        intent: "SEARCH",
+        state: "ACTIVE",
+        time: new Date().toISOString()
+      };
+      sessionStorage.setItem("OMEGA_HOME_SEARCH", JSON.stringify(omegaPackage));
+      window.location.href = DISCOVERY + encodeURIComponent(q);
+    }
+  }
+
+  document.getElementById("omegaForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    openOmega(document.getElementById("omegaInput").value);
+  });
+
+  
+  /* Conjugate bilingual vision stream:
+     English enters from the left; Chinese enters from the right.
+     Both move toward Ω, circulate in opposite directions,
+     cross without collision, and exit through the opposite arm. */
+  (function initVisionStream(){
+    const svg = document.getElementById("visionSvg");
+    const englishPath = document.getElementById("englishFlowPath");
+    const chinesePath = document.getElementById("chineseFlowPath");
+    const layer = document.getElementById("visionTextLayer");
+    if (!svg || !englishPath || !chinesePath || !layer) return;
+
+    const ns = "http://www.w3.org/2000/svg";
+    const englishMessage = "Vision inspires innovation; rigor makes it reproducible.";
+    const chineseMessage = "远大的愿景激发创新，严谨的方法让创新能够被验证和复制。";
+
+    function createNodes(message, cls){
+      return Array.from(message).map(function(ch){
+        const t = document.createElementNS(ns, "text");
+        t.setAttribute("class", "vision-char " + cls);
+        t.textContent = ch === " " ? "\u00A0" : ch;
+        t.style.opacity = "0";
+        layer.appendChild(t);
+        return t;
+      });
+    }
+
+    const enNodes = createNodes(englishMessage, "vision-en");
+    const zhNodes = createNodes(chineseMessage, "vision-zh");
+
+    const enLen = englishPath.getTotalLength();
+    const zhLen = chinesePath.getTotalLength();
+
+    const travelMs = 17000;
+    const staggerEn = 175;
+    const staggerZh = 210;
+    const pauseMs = 2200;
+
+    const longestStream = Math.max(
+      staggerEn * (enNodes.length - 1),
+      staggerZh * (zhNodes.length - 1)
+    );
+    const cycleMs = travelMs + longestStream + pauseMs;
+    let started = null;
+
+    function place(node, path, plen, local, index, language){
+      if (local < 0 || local > travelMs){
+        node.style.opacity = "0";
+        return;
+      }
+
+      const p = local / travelMs;
+      const pt = path.getPointAtLength(plen * p);
+      const nearCore = pt.x > 420 && pt.x < 580;
+
+      const pulse = .72 + .28 * Math.sin((local / 105) + index * .78);
+      node.style.opacity = String(Math.max(.5, pulse));
+      node.setAttribute("x", pt.x.toFixed(2));
+      node.setAttribute("y", pt.y.toFixed(2));
+
+      const coreScale = nearCore ? (1.06 + .13 * Math.sin(local / 135 + index * .3)) : 1;
+      const verticalOffset =
+        nearCore ? (language === "en" ? -6 : 6) : 0;
+
+      node.setAttribute(
+        "transform",
+        "translate(0 " + verticalOffset.toFixed(2) + ") " +
+        "translate(" + pt.x.toFixed(2) + " " + pt.y.toFixed(2) + ") " +
+        "scale(" + coreScale.toFixed(3) + ") " +
+        "translate(" + (-pt.x).toFixed(2) + " " + (-pt.y).toFixed(2) + ")"
+      );
+    }
+
+    function frame(now){
+      if (started === null) started = now;
+      const cycle = (now - started) % cycleMs;
+
+      enNodes.forEach(function(node, i){
+        place(node, englishPath, enLen, cycle - i * staggerEn, i, "en");
+      });
+
+      zhNodes.forEach(function(node, i){
+        place(node, chinesePath, zhLen, cycle - i * staggerZh, i, "zh");
+      });
+
+      requestAnimationFrame(frame);
+    }
+
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      requestAnimationFrame(frame);
+    } else {
+      layer.innerHTML = "";
+
+      const en = document.createElementNS(ns, "text");
+      en.setAttribute("class", "vision-char");
+      en.setAttribute("x", "340");
+      en.setAttribute("y", "90");
+      en.setAttribute("text-anchor", "middle");
+      en.textContent = "Vision inspires innovation";
+      en.style.opacity = "1";
+      layer.appendChild(en);
+
+      const zh = document.createElementNS(ns, "text");
+      zh.setAttribute("class", "vision-char");
+      zh.setAttribute("x", "660");
+      zh.setAttribute("y", "90");
+      zh.setAttribute("text-anchor", "middle");
+      zh.textContent = "远大的愿景激发创新";
+      zh.style.opacity = "1";
+      layer.appendChild(zh);
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>
