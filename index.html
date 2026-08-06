@@ -235,23 +235,23 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
     <path id="englishFlowPath"
       d="M 24 90
          L 300 90
-         C 365 90, 408 82, 442 60
-         C 456 51, 466 42, 452 42
-         A 48 48 0 1 1 548 42
-         A 48 48 0 1 1 452 42
-         A 48 48 0 0 1 548 42
-         C 570 67, 610 88, 700 90
+         C 365 90, 408 82, 438 58
+         C 454 46, 465 29, 500 20
+         A 70 70 0 1 1 500 160
+         A 70 70 0 1 1 500 20
+         C 535 29, 546 46, 562 58
+         C 592 82, 635 90, 700 90
          L 976 90"
       fill="none"/>
     <path id="chineseFlowPath"
       d="M 976 90
          L 700 90
-         C 630 90, 592 80, 572 66
-         C 558 56, 548 45, 572 90
-         A 72 72 0 1 0 428 90
-         A 72 72 0 1 0 572 90
-         A 72 72 0 0 0 428 90
-         C 408 80, 370 90, 300 90
+         C 635 90, 592 82, 562 58
+         C 546 46, 535 29, 500 20
+         A 70 70 0 1 0 500 160
+         A 70 70 0 1 0 500 20
+         C 465 29, 454 46, 438 58
+         C 408 82, 365 90, 300 90
          L 24 90"
       fill="none"/>
    </defs>
@@ -407,52 +407,29 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center}
     const travelMs = 28500;
     const staggerEn = 300;
     const staggerZh = 350;
-    const pauseMs = 3000;
+    const pauseMs = 2600;
 
-    const longestStream = Math.max(
-      staggerEn * (enNodes.length - 1),
-      staggerZh * (zhNodes.length - 1)
-    );
-    const cycleMs = travelMs + longestStream + pauseMs;
+    const enDuration = travelMs + staggerEn * (enNodes.length - 1);
+    const zhDuration = travelMs + staggerZh * (zhNodes.length - 1);
+    const enStart = 0;
+    const zhStart = enDuration + pauseMs;
+    const cycleMs = enDuration + pauseMs + zhDuration + pauseMs;
     let started = null;
-
-    function place(node, path, plen, local, index, language){
-      if (local < 0 || local > travelMs){
-        node.style.opacity = "0";
-        return;
-      }
-
-      const p = local / travelMs;
-      const pt = path.getPointAtLength(plen * p);
-      const nearCore = pt.x > 420 && pt.x < 580;
-
-      const pulse = .72 + .28 * Math.sin((local / 105) + index * .78);
-      node.style.opacity = String(Math.max(.5, pulse));
-      node.setAttribute("x", pt.x.toFixed(2));
-      node.setAttribute("y", pt.y.toFixed(2));
-
-      const coreScale = nearCore ? (1.02 + .05 * Math.sin(local / 180 + index * .3)) : 1;
-      const verticalOffset = 0;
-
-      node.setAttribute(
-        "transform",
-        "translate(0 " + verticalOffset.toFixed(2) + ") " +
-        "translate(" + pt.x.toFixed(2) + " " + pt.y.toFixed(2) + ") " +
-        "scale(" + coreScale.toFixed(3) + ") " +
-        "translate(" + (-pt.x).toFixed(2) + " " + (-pt.y).toFixed(2) + ")"
-      );
-    }
 
     function frame(now){
       if (started === null) started = now;
       const cycle = (now - started) % cycleMs;
 
+      /* Phase 1: English only — left -> Ω clockwise -> right */
       enNodes.forEach(function(node, i){
-        place(node, englishPath, enLen, cycle - i * staggerEn, i, "en");
+        const local = cycle - enStart - i * staggerEn;
+        place(node, englishPath, enLen, local, i, "en");
       });
 
+      /* Phase 2: Chinese only — right -> Ω counter-clockwise -> left */
       zhNodes.forEach(function(node, i){
-        place(node, chinesePath, zhLen, cycle - i * staggerZh, i, "zh");
+        const local = cycle - zhStart - i * staggerZh;
+        place(node, chinesePath, zhLen, local, i, "zh");
       });
 
       requestAnimationFrame(frame);
